@@ -13,6 +13,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 target_link_libraries(${PROJECT_NAME}
         pico_stdlib
         FreeRTOS-Kernel-Heap4
+        RadioLib
 )
 
 pico_set_program_name(${PROJECT_NAME} ${PROJECT_NAME})

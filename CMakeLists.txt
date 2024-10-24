@@ -34,4 +34,6 @@ project(${PROJECT_NAME} C CXX ASM)
 
 pico_sdk_init()
 
+add_subdirectory(lib/RadioLib)
+
 add_subdirectory(src)
