@@ -1,6 +1,7 @@
 # Add the executable
 add_executable(${PROJECT_NAME}
         main.cpp
+        tasks/led_task.cpp
         config/hw_config.cpp
 )
 
@@ -8,11 +9,12 @@ add_executable(${PROJECT_NAME}
 target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/../lib
+        include
 )
 
 # setup NanoPB
 find_package(Nanopb REQUIRED)
-nanopb_generate_cpp(TARGET proto proto/simple.proto)
+nanopb_generate_cpp(TARGET proto config/proto/simple.proto)
 
 # Link libraries
 target_link_libraries(${PROJECT_NAME}
