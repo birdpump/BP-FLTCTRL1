@@ -1,6 +1,6 @@
 # Add the executable
 add_executable(${PROJECT_NAME}
-        pico-rtos.cpp
+        main.cpp
 )
 
 # Include directories
