@@ -12,7 +12,7 @@
 
 #include "f_util.h"
 #include "ff.h"
-// #include "rtc.h"
+// #include "rtc.h" // TODO figure out what is using this header
 #include "hw_config.h"
 
 #include <pb_encode.h>

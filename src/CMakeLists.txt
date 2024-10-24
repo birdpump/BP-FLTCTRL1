@@ -1,7 +1,7 @@
 # Add the executable
 add_executable(${PROJECT_NAME}
         main.cpp
-        hw_config.cpp
+        config/hw_config.cpp
 )
 
 # Include directories
