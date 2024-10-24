@@ -2,6 +2,7 @@
 add_executable(${PROJECT_NAME}
         main.cpp
         tasks/led_task.cpp
+        utils/encode_data.cpp
         config/hw_config.cpp
 )
 

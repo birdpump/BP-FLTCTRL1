@@ -16,34 +16,31 @@
 // #include "rtc.h" // TODO figure out what is using this header
 #include "hw_config.h"
 
-#include <pb_encode.h>
-#include <pb_decode.h>
-#include "simple.pb.h"
-
 #include "tasks/led_task.h"
+#include "utils/encode_data.h"
 
 using namespace std;
 
 
 void setup() {
-    // Add any setup code here, if needed
+    //todo test nanopb
+    string test = encodeData(15);
+
+    cout << test << endl;
 }
 
 int main() {
-    stdio_init_all(); // Initialize standard I/O
+    stdio_init_all();
 
     setup();
 
-    // Create LED task
     if (xTaskCreate(ledTask, "led_task", 256, NULL, 1, NULL) != pdPASS) {
         printf("Failed to create LED task\n");
-        while (1); // Halt if task creation failed
+        while (1);
     }
 
-    // Start FreeRTOS scheduler
     vTaskStartScheduler();
 
-    // Should never reach here
     printf("Scheduler failed to start\n");
     while (1);
 }
