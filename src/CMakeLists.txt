@@ -1,6 +1,7 @@
 # Add the executable
 add_executable(${PROJECT_NAME}
         main.cpp
+        hw_config.cpp
 )
 
 # Include directories
@@ -9,11 +10,20 @@ target_include_directories(${PROJECT_NAME} PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/../lib
 )
 
+# setup NanoPB
+find_package(Nanopb REQUIRED)
+nanopb_generate_cpp(TARGET proto proto/simple.proto)
+
 # Link libraries
 target_link_libraries(${PROJECT_NAME}
         pico_stdlib
+        hardware_gpio
+        hardware_spi
+        hardware_timer
         FreeRTOS-Kernel-Heap4
         RadioLib
+        proto
+        no-OS-FatFS-SD-SDIO-SPI-RPi-Pico
 )
 
 pico_set_program_name(${PROJECT_NAME} ${PROJECT_NAME})

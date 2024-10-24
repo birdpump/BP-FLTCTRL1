@@ -8,6 +8,17 @@
 #include "pico/stdlib.h"
 #include "queue.h"
 
+#include <RadioLib.h>
+
+#include "f_util.h"
+#include "ff.h"
+// #include "rtc.h"
+#include "hw_config.h"
+
+#include <pb_encode.h>
+#include <pb_decode.h>
+#include "simple.pb.h"
+
 using namespace std;
 
 QueueHandle_t inputQueue;
