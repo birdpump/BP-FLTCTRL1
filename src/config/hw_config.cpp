@@ -19,7 +19,7 @@ See
 https://github.com/carlk3/no-OS-FatFS-SD-SDIO-SPI-RPi-Pico/tree/main#customizing-for-the-hardware-configuration
 */
 
-#include "../lib/no-OS-FatFs/src/include/hw_config.h"
+#include "hw_config.h"
 
 /* Configuration of hardware SPI object */
 static spi_t spi = {
