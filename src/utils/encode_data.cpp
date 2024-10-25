@@ -25,7 +25,7 @@ string encodeData(int number) {
 
     // Fill in the lucky number
     message.test_number = number;
-    printf("Number is: %llu\n", number);
+    printf("Number is: %d\n", number);
 
     // Encode the message
     status = pb_encode(&stream, SimpleMessage_fields, &message);

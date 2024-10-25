@@ -33,6 +33,7 @@ void testRadio(){
     int state = radio.begin();
     if (state != RADIOLIB_ERR_NONE) {
         printf("failed, code %d\n", state);
+        return;
     }
     printf("success!\n");
 
@@ -44,5 +45,6 @@ void testRadio(){
         hal->delay(1000);
     } else {
         printf("failed, code %d\n", state);
+        return;
     }
 }
