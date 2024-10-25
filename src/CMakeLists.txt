@@ -3,6 +3,7 @@ add_executable(${PROJECT_NAME}
         main.cpp
         tasks/led_task.cpp
         utils/encode_data.cpp
+        utils/telemetry_radio.cpp
         config/hw_config.cpp
 )
 
@@ -23,6 +24,7 @@ target_link_libraries(${PROJECT_NAME}
         hardware_gpio
         hardware_spi
         hardware_timer
+        hardware_pwm
         FreeRTOS-Kernel-Heap4
         RadioLib
         proto
