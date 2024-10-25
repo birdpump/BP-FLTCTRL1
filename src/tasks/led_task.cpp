@@ -1,10 +1,13 @@
 #include "pico/stdlib.h"
+#include <iostream>
 
 #include "tasks/led_task.h"
+#include "utils/encode_data.h"
 
 #include "FreeRTOS.h"
 #include "task.h"
 
+using namespace std;
 
 void ledTask(void *pvParameters) {
     gpio_init(PICO_DEFAULT_LED_PIN);
@@ -16,5 +19,9 @@ void ledTask(void *pvParameters) {
 
         gpio_put(PICO_DEFAULT_LED_PIN, 0);
         vTaskDelay(pdMS_TO_TICKS(800));
+
+        string test = encodeData(15);
+
+        cout << test << endl;
     }
 }

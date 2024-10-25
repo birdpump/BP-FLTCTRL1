@@ -24,9 +24,7 @@ using namespace std;
 
 void setup() {
     //todo test nanopb
-    string test = encodeData(15);
 
-    cout << test << endl;
 }
 
 int main() {
