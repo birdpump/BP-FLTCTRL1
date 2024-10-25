@@ -18,12 +18,16 @@
 
 #include "tasks/led_task.h"
 #include "utils/encode_data.h"
+#include "utils/telemetry_radio.h"
 
 using namespace std;
 
 
 void setup() {
-    //todo test nanopb
+    // todo test radio
+    sleep_ms(5000);
+
+    testRadio();
 
 }
 
