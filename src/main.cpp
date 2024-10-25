@@ -22,12 +22,43 @@
 
 using namespace std;
 
+void test_SD() {
+    sleep_ms(10000);
+
+    puts("Hello, world!");
+
+    FATFS fs;
+    FRESULT fr = f_mount(&fs, "", 1);
+    if (FR_OK != fr) {
+        panic("f_mount error: %s (%d)\n", FRESULT_str(fr), fr);
+    }
+
+    // Open a file and write to it
+    FIL fil;
+    const char* const filename = "filename.txt";
+    fr = f_open(&fil, filename, FA_OPEN_APPEND | FA_WRITE);
+    if (FR_OK != fr && FR_EXIST != fr) {
+        panic("f_open(%s) error: %s (%d)\n", filename, FRESULT_str(fr), fr);
+    }
+    if (f_printf(&fil, "Hello, world!\n") < 0) {
+        printf("f_printf failed\n");
+    }
+
+    // Close the file
+    fr = f_close(&fil);
+    if (FR_OK != fr) {
+        printf("f_close error: %s (%d)\n", FRESULT_str(fr), fr);
+    }
+
+    f_unmount("");
+}
 
 void setup() {
     // todo test radio
-    sleep_ms(5000);
-
-    testRadio();
+    // sleep_ms(5000);
+    //
+    // testRadio();
+    test_SD();
 
 }
 
