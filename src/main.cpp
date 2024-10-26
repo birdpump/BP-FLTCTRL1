@@ -55,10 +55,10 @@ void test_SD() {
 
 void setup() {
     // todo test radio
-    // sleep_ms(5000);
+     sleep_ms(15000);
     //
-    // testRadio();
-    test_SD();
+     testRadio();
+//    test_SD();
 
 }
 

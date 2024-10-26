@@ -13,23 +13,23 @@
 
 #include "utils/telemetry_radio.h"
 
-#define SPI_PORT spi0
-#define SPI_MISO 4
-#define SPI_MOSI 3
-#define SPI_SCK 2
+#define SPI_PORT spi1
+#define SPI_MISO 12
+#define SPI_MOSI 11
+#define SPI_SCK 10
 
-#define RFM_NSS 26
-#define RFM_RST 22
-#define RFM_DIO0 14
-#define RFM_DIO1 15
+#define RFM_NSS 3
+#define RFM_RST 15
+#define RFM_DIO1 20
+#define RFM_DIO2 2
 
 
 PicoHal* hal = new PicoHal(SPI_PORT, SPI_MISO, SPI_MOSI, SPI_SCK);
 
-SX1262 radio = new Module(hal, RFM_NSS, RFM_DIO0, RFM_RST, RFM_DIO1);
+SX1262 radio = new Module(hal, RFM_NSS, RFM_DIO1, RFM_RST, RFM_DIO2);
 
 void testRadio(){
-    printf("[SX1276] Initializing ... ");
+    printf("[SX1262] Initializing ... ");
     int state = radio.begin();
     if (state != RADIOLIB_ERR_NONE) {
         printf("failed, code %d\n", state);
@@ -43,6 +43,8 @@ void testRadio(){
         printf("success!\n");
 
         hal->delay(1000);
+
+        printf("all done!\n");
     } else {
         printf("failed, code %d\n", state);
         return;
