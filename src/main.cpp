@@ -18,7 +18,7 @@
 
 #include "tasks/led_task.h"
 #include "utils/encode_data.h"
-#include "utils/telemetry_radio.h"
+#include "tasks/telemetry_radio.h"
 
 using namespace std;
 
@@ -54,12 +54,7 @@ void test_SD() {
 }
 
 void setup() {
-    // todo test radio
-     sleep_ms(15000);
-    //
-     testRadio();
-//    test_SD();
-
+     sleep_ms(5000);
 }
 
 int main() {
@@ -67,7 +62,12 @@ int main() {
 
     setup();
 
-    if (xTaskCreate(ledTask, "led_task", 256, NULL, 1, NULL) != pdPASS) {
+    if (xTaskCreate(telemetryRadio, "telemetryRadio", 8192, NULL, 2, NULL) != pdPASS) {
+        printf("Failed to create LED task\n");
+        while (1);
+    }
+
+    if (xTaskCreate(ledTask, "ledTask", 256, NULL, 1, NULL) != pdPASS) {
         printf("Failed to create LED task\n");
         while (1);
     }
