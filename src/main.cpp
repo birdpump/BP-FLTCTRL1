@@ -1,79 +1,71 @@
-#include <iostream>
-#include <sstream>
-#include <cmath>
-#include <cstdio>
-
+#include "FreeRTOS.h" /* Must come first. */
+//
+#include <stdio.h>
+//
 #include "pico/stdlib.h"
-
-#include "FreeRTOS.h"
-#include "task.h"
-#include "queue.h"
-
-#include <RadioLib.h>
-
-#include "f_util.h"
-#include "ff.h"
-// #include "rtc.h" // TODO figure out what is using this header
+//
+#include "ff_headers.h"
+#include "ff_sddisk.h"
+#include "ff_stdio.h"
+#include "ff_utils.h"
+//
 #include "hw_config.h"
 
-#include "tasks/led_task.h"
-#include "utils/encode_data.h"
-#include "tasks/telemetry_radio.h"
-
-using namespace std;
-
-void test_SD() {
-    sleep_ms(10000);
-
-    puts("Hello, world!");
-
-    FATFS fs;
-    FRESULT fr = f_mount(&fs, "", 1);
-    if (FR_OK != fr) {
-        panic("f_mount error: %s (%d)\n", FRESULT_str(fr), fr);
-    }
-
-    // Open a file and write to it
-    FIL fil;
-    const char* const filename = "filename.txt";
-    fr = f_open(&fil, filename, FA_OPEN_APPEND | FA_WRITE);
-    if (FR_OK != fr && FR_EXIST != fr) {
-        panic("f_open(%s) error: %s (%d)\n", filename, FRESULT_str(fr), fr);
-    }
-    if (f_printf(&fil, "Hello, world!\n") < 0) {
-        printf("f_printf failed\n");
-    }
-
-    // Close the file
-    fr = f_close(&fil);
-    if (FR_OK != fr) {
-        printf("f_close error: %s (%d)\n", FRESULT_str(fr), fr);
-    }
-
-    f_unmount("");
+static inline void stop() {
+    fflush(stdout);
+    __breakpoint();
 }
 
-void setup() {
-     sleep_ms(5000);
+// See https://www.freertos.org/FreeRTOS-Plus/FreeRTOS_Plus_FAT/Standard_File_System_API.html
+
+static void SimpleTask(void *arg) {
+    (void)arg;
+
+    printf("\n%s: Hello, world!\n", pcTaskGetName(NULL));
+
+    FF_Disk_t *pxDisk = FF_SDDiskInit("sd0");
+    configASSERT(pxDisk);
+    FF_Error_t xError = FF_SDDiskMount(pxDisk);
+    if (FF_isERR(xError) != pdFALSE) {
+        FF_PRINTF("FF_SDDiskMount: %s\n",
+                  (const char *)FF_GetErrMessage(xError));
+        stop();
+    }
+    FF_FS_Add("/sd0", pxDisk);
+
+    FF_FILE *pxFile = ff_fopen("/sd0/filename.txt", "a");
+    if (!pxFile) {
+        FF_PRINTF("ff_fopen failed: %s (%d)\n", strerror(stdioGET_ERRNO()),
+                  stdioGET_ERRNO());
+        stop();
+    }
+    if (ff_fprintf(pxFile, "Hello, world!\n") < 0) {
+        FF_PRINTF("ff_fprintf failed: %s (%d)\n", strerror(stdioGET_ERRNO()),
+                  stdioGET_ERRNO());
+        stop();
+    }
+    if (-1 == ff_fclose(pxFile)) {
+        FF_PRINTF("ff_fclose failed: %s (%d)\n", strerror(stdioGET_ERRNO()),
+                  stdioGET_ERRNO());
+        stop();
+    }
+    FF_FS_Remove("/sd0");
+    FF_Unmount(pxDisk);
+    FF_SDDiskDelete(pxDisk);
+    puts("Goodbye, world!");
+
+    vTaskDelete(NULL);
 }
 
 int main() {
     stdio_init_all();
 
-    setup();
+    sleep_ms(10000);
 
-    if (xTaskCreate(telemetryRadio, "telemetryRadio", 8192, NULL, 2, NULL) != pdPASS) {
-        printf("Failed to create LED task\n");
-        while (1);
-    }
-
-    if (xTaskCreate(ledTask, "ledTask", 256, NULL, 1, NULL) != pdPASS) {
-        printf("Failed to create LED task\n");
-        while (1);
-    }
-
+    xTaskCreate(SimpleTask, "SimpleTask", 1024, NULL, configMAX_PRIORITIES - 1,
+                NULL);
     vTaskStartScheduler();
 
-    printf("Scheduler failed to start\n");
-    while (1);
+    /* should never reach here */
+    panic_unsupported();
 }

@@ -38,6 +38,6 @@ set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/lib/nanopb/extra)
 
 # Add libraries
 add_subdirectory(lib/RadioLib)
-add_subdirectory(lib/no-OS-FatFs/src)
+add_subdirectory(lib/FreeRTOS-Fat/src/FreeRTOS+FAT+CLI)
 
 add_subdirectory(src)

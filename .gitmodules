@@ -7,3 +7,6 @@
 [submodule "lib/RadioLib"]
 	path = lib/RadioLib
 	url = https://github.com/birdpump/RadioLib.git
+[submodule "lib/FreeRTOS-FAT"]
+	path = lib/FreeRTOS-FAT
+	url = https://github.com/carlk3/FreeRTOS-FAT-CLI-for-RPi-Pico.git
