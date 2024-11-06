@@ -8,7 +8,7 @@
 #include <pb_encode.h>
 #include <pb_decode.h>
 #include <iomanip>
-#include "simple.pb.h"
+// #include "simple.pb.h"
 
 #include "utils/encode_data.h"
 

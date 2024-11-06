@@ -1,5 +1,5 @@
-#ifndef TELEMETRY_RADIO_H
-#define TELEMETRY_RADIO_H
+#ifndef RADIO_TASKS_H
+#define RADIO_TASKS_H
 
 void telemetryRadio(void *pvParameters);
 
