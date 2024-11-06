@@ -63,7 +63,7 @@ int main() {
 
     setup();
 
-    if (xTaskCreate(commandRadio, "telemetryRadio", 8192, NULL, 2, NULL) != pdPASS) {
+    if (xTaskCreate(commandRadio, "commandRadio", 8192, NULL, 2, NULL) != pdPASS) {
         printf("Failed to create LED task\n");
         while (1);
     }
