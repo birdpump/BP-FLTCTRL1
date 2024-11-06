@@ -16,7 +16,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 
 # setup NanoPB
 find_package(Nanopb REQUIRED)
-nanopb_generate_cpp(TARGET proto config/proto/simple.proto)
+nanopb_generate_cpp(TARGET proto config/proto/telemetry.proto)
 
 # Link libraries
 target_link_libraries(${PROJECT_NAME}

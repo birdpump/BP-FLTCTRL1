@@ -3,4 +3,6 @@
 
 void telemetryRadio(void *pvParameters);
 
+void commandRadio(void *pvParameters);
+
 #endif
