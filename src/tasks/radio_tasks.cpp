@@ -74,7 +74,6 @@ uint8_t calculateChecksum(const uint8_t *buffer, size_t length) {
 }
 
 void telemetryRadio(void *pvParameters) {
-
     TickType_t xLastWakeTime;
     const TickType_t xFrequency = pdMS_TO_TICKS(500);
     xLastWakeTime = xTaskGetTickCount();
@@ -90,7 +89,7 @@ void telemetryRadio(void *pvParameters) {
             pb_encode(&stream, Telemetry_fields, &telemetry);
             size_t message_size = stream.bytes_written;
 
-            uint8_t frame[3 + message_size + 1];  // start byte + length + type + payload + checksum
+            uint8_t frame[3 + message_size + 1]; // start byte + length + type + payload + checksum
             frame[0] = START_BYTE;
             frame[1] = message_size;
             frame[2] = TELEMETRY_TYPE;
@@ -106,7 +105,7 @@ void telemetryRadio(void *pvParameters) {
             }
             xSemaphoreGive(xRadioMutex);
 
-            vTaskDelayUntil( &xLastWakeTime, xFrequency );
+            vTaskDelayUntil(&xLastWakeTime, xFrequency);
         }
     }
 }
@@ -175,9 +174,9 @@ void commandRadio(void *pvParameters) {
                     }
 
                     // Print LoRa metadata
-                    printf("[SX1262] RSSI:\t\t%.2f dBm\n", radio.getRSSI());
-                    printf("[SX1262] SNR:\t\t%.2f dB\n", radio.getSNR());
-                    printf("[SX1262] FreqErr:\t%.2f Hz\n", radio.getFrequencyError());
+                    printf("[Radio] RSSI:\t\t%.2f dBm\n", radio.getRSSI());
+                    printf("[Radio] SNR:\t\t%.2f dB\n", radio.getSNR());
+                    printf("[Radio] FreqErr:\t%.2f Hz\n", radio.getFrequencyError());
                 } else {
                     printf("Failed to read data, code %d\n", state);
                 }
