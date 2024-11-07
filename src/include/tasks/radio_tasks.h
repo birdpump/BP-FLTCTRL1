@@ -3,6 +3,8 @@
 
 void initRadio();
 
+void initRadioTask(void *pvParameters);
+
 void telemetryRadio(void *pvParameters);
 
 void commandRadio(void *pvParameters);

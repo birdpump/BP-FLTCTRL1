@@ -63,20 +63,25 @@ int main() {
 
     setup();
 
-    if (xTaskCreate(commandRadio, "commandRadio", 8192, NULL, 2, NULL) != pdPASS) {
-        printf("Failed to create LED task\n");
+    if (xTaskCreate(initRadioTask, "initRadioTask", 8192, NULL, 4, NULL) != pdPASS) {
+        printf("Failed to create initRadio task\n");
         while (1);
     }
 
-    if (xTaskCreate(telemetryRadio, "telemetryRadio", 8192, NULL, 1, NULL) != pdPASS) {
-        printf("Failed to create LED task\n");
-        while (1);
-    }
+//    if (xTaskCreate(commandRadio, "commandRadio", 8192, NULL, 2, NULL) != pdPASS) {
+//        printf("Failed to create LED task\n");
+//        while (1);
+//    }
+//
+//    if (xTaskCreate(telemetryRadio, "telemetryRadio", 8192, NULL, 1, NULL) != pdPASS) {
+//        printf("Failed to create LED task\n");
+//        while (1);
+//    }
 
-    //    if (xTaskCreate(ledTask, "ledTask", 256, NULL, 1, NULL) != pdPASS) {
-    //        printf("Failed to create LED task\n");
-    //        while (1);
-    //    }
+        if (xTaskCreate(ledTask, "ledTask", 256, NULL, 1, NULL) != pdPASS) {
+            printf("Failed to create LED task\n");
+            while (1);
+        }
 
     vTaskStartScheduler();
 
