@@ -55,6 +55,10 @@ void test_SD() {
 
 void setup() {
     sleep_ms(5000);
+
+    gpio_init(PICO_DEFAULT_LED_PIN);
+    gpio_set_dir(PICO_DEFAULT_LED_PIN, GPIO_OUT);
+
     initRadio();
 }
 
@@ -78,10 +82,10 @@ int main() {
 //        while (1);
 //    }
 
-        if (xTaskCreate(ledTask, "ledTask", 256, NULL, 1, NULL) != pdPASS) {
-            printf("Failed to create LED task\n");
-            while (1);
-        }
+//        if (xTaskCreate(ledTask, "ledTask", 256, NULL, 1, NULL) != pdPASS) {
+//            printf("Failed to create LED task\n");
+//            while (1);
+//        }
 
     vTaskStartScheduler();
 

@@ -84,8 +84,8 @@ void initRadioTask(void *pvParameters) {
 
     printf("[Radio] Starting tasks\n");
 
-    xTaskCreate(commandRadio, "BaseRadioTX", 8192, NULL, 2, NULL);
-//    xTaskCreate(telemetryRadio, "BaseRadioRX", 8192, NULL, 1, NULL);
+//    xTaskCreate(commandRadio, "commandRadio", 8192, NULL, 2, NULL);
+    xTaskCreate(telemetryRadio, "telemetryRadio", 8192, NULL, 1, NULL);
 
     printf("[Radio] Tasks started\n");
 
@@ -119,6 +119,9 @@ void telemetryRadio(void *pvParameters) {
             int state = radio.transmit(frame, sizeof(frame));
             if (state == RADIOLIB_ERR_NONE) {
                 printf("success!\n");
+                gpio_put(PICO_DEFAULT_LED_PIN, 1);
+                vTaskDelay(pdMS_TO_TICKS(15));
+                gpio_put(PICO_DEFAULT_LED_PIN, 0);
             } else {
                 printf("failed, code %d\n", state);
             }
@@ -144,6 +147,10 @@ void commandRadio(void *pvParameters) {
     for (;;) {
         if (xSemaphoreTake(xPacketSemaphore, portMAX_DELAY) == pdTRUE) {
             if (xSemaphoreTake(xRadioMutex, portMAX_DELAY) == pdTRUE) {
+                gpio_put(PICO_DEFAULT_LED_PIN, 1);
+                vTaskDelay(pdMS_TO_TICKS(15));
+                gpio_put(PICO_DEFAULT_LED_PIN, 0);
+
                 const size_t len = 80;
                 uint8_t data[len];
 
