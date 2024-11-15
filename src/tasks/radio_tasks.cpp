@@ -44,10 +44,14 @@ SemaphoreHandle_t xinitSemaphore;
 SemaphoreHandle_t xPacketSemaphore;
 SemaphoreHandle_t xRadioMutex;
 
+volatile uint8_t loraMode;
+
 void setFlag() {
-    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-    xSemaphoreGiveFromISR(xPacketSemaphore, &xHigherPriorityTaskWoken);
-    portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+    if (loraMode == 0) {
+        BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+        xSemaphoreGiveFromISR(xPacketSemaphore, &xHigherPriorityTaskWoken);
+        portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+    }
 }
 
 uint8_t calculateChecksum(const uint8_t *buffer, size_t length) {
@@ -78,13 +82,9 @@ void initRadioTask(void *pvParameters) {
 
     printf("[Radio] Mutex Config Successful\n");
 
-//    xSemaphoreGive(xinitSemaphore);
-
-    printf("[Radio] Mutex Config Successful\n");
-
     printf("[Radio] Starting tasks\n");
 
-//    xTaskCreate(commandRadio, "commandRadio", 8192, NULL, 2, NULL);
+    xTaskCreate(commandRadio, "commandRadio", 8192, NULL, 2, NULL);
     xTaskCreate(telemetryRadio, "telemetryRadio", 8192, NULL, 1, NULL);
 
     printf("[Radio] Tasks started\n");
@@ -99,6 +99,8 @@ void telemetryRadio(void *pvParameters) {
 
     for (;;) {
         if (xSemaphoreTake(xRadioMutex, portMAX_DELAY) == pdTRUE) {
+            loraMode = 1;
+
             Telemetry telemetry = Telemetry_init_zero;
             telemetry.temperature = 23.5;
             telemetry.humidity = 50.0;
@@ -115,13 +117,15 @@ void telemetryRadio(void *pvParameters) {
             memcpy(&frame[3], buffer, message_size);
             frame[3 + message_size] = calculateChecksum(buffer, message_size);
 
-            printf("[Radio] Transmitting packet ...\n");
+            printf("[Radio] Transmitting packet ... ");
             int state = radio.transmit(frame, sizeof(frame));
             if (state == RADIOLIB_ERR_NONE) {
                 printf("success!\n");
                 gpio_put(PICO_DEFAULT_LED_PIN, 1);
                 vTaskDelay(pdMS_TO_TICKS(15));
                 gpio_put(PICO_DEFAULT_LED_PIN, 0);
+
+                loraMode = 0;
             } else {
                 printf("failed, code %d\n", state);
             }
@@ -134,9 +138,6 @@ void telemetryRadio(void *pvParameters) {
 
 
 void commandRadio(void *pvParameters) {
-//    gpio_init(PICO_DEFAULT_LED_PIN);
-//    gpio_set_dir(PICO_DEFAULT_LED_PIN, GPIO_OUT);
-
     printf("[Radio] Starting listener...\n");
     int state = radio.startReceive();
     if (state != RADIOLIB_ERR_NONE) {
@@ -187,11 +188,11 @@ void commandRadio(void *pvParameters) {
                             printf("Command received:\n");
                             printf("LED On: %s\n", command.test ? "True" : "False");
                             // Add additional actions based on command data as needed
-//                            if (command.test) {
-//                                gpio_put(PICO_DEFAULT_LED_PIN, 1);
-//                            } else {
-//                                gpio_put(PICO_DEFAULT_LED_PIN, 0);
-//                            }
+                            //                            if (command.test) {
+                            //                                gpio_put(PICO_DEFAULT_LED_PIN, 1);
+                            //                            } else {
+                            //                                gpio_put(PICO_DEFAULT_LED_PIN, 0);
+                            //                            }
                         } else {
                             printf("Failed to decode Protobuf message\n");
                         }
