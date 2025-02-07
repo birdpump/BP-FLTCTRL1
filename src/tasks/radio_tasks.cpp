@@ -37,17 +37,21 @@ using namespace std;
 #define RFM_DIO1 20
 #define RFM_DIO2 2
 
+
 PicoHal *hal = new PicoHal(SPI_PORT, SPI_MISO, SPI_MOSI, SPI_SCK);
 SX1262 radio = new Module(hal, RFM_NSS, RFM_DIO1, RFM_RST, RFM_DIO2);
 
 SemaphoreHandle_t xinitSemaphore;
 SemaphoreHandle_t xPacketSemaphore;
 SemaphoreHandle_t xRadioMutex;
+bool transmitActive = false;
 
 void setFlag() {
-    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-    xSemaphoreGiveFromISR(xPacketSemaphore, &xHigherPriorityTaskWoken);
-    portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+    if (!transmitActive) {
+        BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+        xSemaphoreGiveFromISR(xPacketSemaphore, &xHigherPriorityTaskWoken);
+        portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+    }
 }
 
 uint8_t calculateChecksum(const uint8_t *buffer, size_t length) {
@@ -67,25 +71,15 @@ void initRadio() {
 void initRadioTask(void *pvParameters) {
     printf("[Radio] Initializing Radio...\n");
     int state = radio.begin(902.5, 125.0, 8, 5, 0x36, 22, 14);
-    printf("[Radio] Radio Initialized...\n");
     if (state != RADIOLIB_ERR_NONE) {
         printf("[Radio] Initialization Failed, code %d\n", state);
         return;
     }
     printf("[Radio] Initialization Successful\n");
 
-
-    radio.setPacketReceivedAction(setFlag);
-
-
-    printf("[Radio] Mutex Config Successful\n");
-
-    //    xSemaphoreGive(xinitSemaphore);
-
-    printf("[Radio] Mutex Config Successful\n");
+    radio.setDio1Action(setFlag);
 
     printf("[Radio] Starting tasks\n");
-
     xTaskCreate(commandRadio, "commandRadio", 8192, NULL, 2, NULL);
     xTaskCreate(telemetryRadio, "telemetryRadio", 8192, NULL, 1, NULL);
 
@@ -96,11 +90,12 @@ void initRadioTask(void *pvParameters) {
 
 void telemetryRadio(void *pvParameters) {
     TickType_t xLastWakeTime;
-    const TickType_t xFrequency = pdMS_TO_TICKS(500);
+    const TickType_t xFrequency = pdMS_TO_TICKS(1000);
     xLastWakeTime = xTaskGetTickCount();
 
     for (;;) {
         if (xSemaphoreTake(xRadioMutex, portMAX_DELAY) == pdTRUE) {
+            transmitActive = true;
             Telemetry telemetry = Telemetry_init_zero;
             telemetry.temperature = 23.5;
             telemetry.humidity = 50.0;
@@ -129,9 +124,12 @@ void telemetryRadio(void *pvParameters) {
             }
 
             printf("[Radio] Starting listener...\n");
+
+            transmitActive = false;
+
             int state2 = radio.startReceive();
             if (state2 != RADIOLIB_ERR_NONE) {
-                printf("[Radio] Listening Failed, code %d\n", state);
+                printf("[Radio] Listening Failed, code %d\n", state2);
                 return;
             }
 
