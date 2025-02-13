@@ -4,6 +4,7 @@ add_executable(${PROJECT_NAME}
         tasks/led_task.cpp
         tasks/radio_tasks.cpp
         config/hw_config.cpp
+        store/state.cpp
 )
 
 # Include directories

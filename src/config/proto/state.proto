@@ -1,0 +1,6 @@
+syntax = "proto3";
+
+message State {
+  int statCode = 1;
+  int fireTime = 2;
+}
