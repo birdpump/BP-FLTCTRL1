@@ -44,7 +44,7 @@ SX1262 radio = new Module(hal, RFM_NSS, RFM_DIO1, RFM_RST, RFM_DIO2);
 SemaphoreHandle_t xinitSemaphore;
 SemaphoreHandle_t xPacketSemaphore;
 SemaphoreHandle_t xRadioMutex;
-bool transmitActive = false;
+volatile bool transmitActive = false;
 
 void setFlag() {
     if (!transmitActive) {
